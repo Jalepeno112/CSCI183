@@ -1,3 +1,6 @@
+require("doBy")
+require("ggplot2")
+
 #Predict who survives using glm()
 
 
@@ -17,8 +20,11 @@ findRoundingThreshold <- function(survived.glm) {
                        data.frame(Rounded=roundThreshold(survived.glm,.8),Category=.8))
   roundingTest.summary = summaryBy(Rounded ~ Category, data=roundingTest)
   
-  m = (roundingTest.summary[1,1] - roundingTest.summary[2,1])/ (roundingTest.summary[1,2] - roundingTest.summary[2,2])
-  b = roundingTest.summary[1,2] - (m *roundingTest.summary[1,1])
+  #apply linear regression
+  round_fit <- glm(Rounded.mean~Category, data=roundingTest.summary)
+  
+  m = summary(round_fit)$coefficients[2,1]
+  b = summary(round_fit)$coefficients[1,1]
   x = (.31 - b)/m
   
   return(x)
@@ -94,7 +100,7 @@ survival.rounded = data.frame(Chance = survived.glm)
 
 #the rounding threshold value was found just using the command line
 #findRoundingThreshold() contains the code used to find it.
-survival.rounded$Rounded = roundThreshold(survival.rounded$Chance, 0.5766054)
+survival.rounded$Rounded = roundThreshold(survival.rounded$Chance, 0.5821212)
 
 
 #Plot
