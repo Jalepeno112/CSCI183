@@ -1,0 +1,26 @@
+Creating a model in Caret using Titanic data
+
+1. Preprocess Data
+ Impute na with mean
+
+2. Understand what a tree is doing
+ Make 1 decision tree with rpart and visualize tree
+http://www.statmethods.net/advstats/cart.html 
+
+3. Fit a Model
+Fit a cross validated model see
+http://topepo.github.io/caret/training.html
+
+???  Use 10-fold CV
+???	gbm model
+???	grid search w/ interaction depth 1,.,4 (this is number of levels in tree)
+???	number of trees 200 to 10000 by 200
+???	shrinkage .1,.05,.01,.005,.001
+
+4. Inspect model
+Create accuracy plot as a function of parameters: simply type trellis.par.set(caretTheme()) then type plot(model) 
+
+Check predictor importance: summary(model)
+
+5. Submit
+Make Kaggle Submission
