@@ -1,3 +1,7 @@
+require("ggplot2")
+require("doBy")
+require("zoo")
+
 data =read.csv(file="Bike Theft Log (From Sept07).csv")
 
 getBuildings <- function(data, buildings) {
@@ -61,4 +65,21 @@ grouped.byMonth <- aggregate(CASE ~ MONTH, data=data, length)
 #plot thefts by month
 print(ggplot(data=grouped.byMonth, aes(x=MONTH, y = CASE, fill=MONTH)) + 
         geom_bar(stat="identity") + ylab("Thefts") + ggtitle("Thefts by Month"))
+
+
+#need location and YEAR-MONTH dates
+data$YearMonth = strftime(data$DATE_FACTOR,"%Y-%m")
+
+grouped.byDateAndLocation <- summaryBy(CASE ~ YearMonth + LOCATION_DORM, data=data,FUN=length)
+
+outputData = data.frame(Thefts = grouped.byDateAndLocation$CASE.length, 
+                        Location = grouped.byDateAndLocation$LOCATION_DORM, 
+                        Date = grouped.byDateAndLocation$YearMonth)
+
+
+#NOTE: for whatever reason, this doesn't include a header for the fist column
+#I had to go into Excel to add it
+outputData.formatted <- xtabs(Thefts ~ Location + Date, outputData)
+write.table(outputData.formatted, file="bikeTheft.tsv", quote=FALSE, sep='\t')
+
 

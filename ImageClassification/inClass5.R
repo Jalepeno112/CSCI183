@@ -12,6 +12,19 @@ imageIds <- unlist(lapply(greyImages,
                    )))
 data.pre <- data.frame(Id = imageIds)
 
+
+vectorizeImage <- function(img) {
+  i <- readImage(img)
+  return (as.vector(imageData(i)))
+}
+
+unlisted_images <- lapply(greyImages, function(x){vectorizeImage(x)})
+pixels.frame <- do.call(rbind.data.frame,unlisted_images)
+pixel_names = c(1:2500)
+colnames(pixels.frame) <- pixel_names
+data.pre <-cbind(data.pre,pixels.frame)
+
+
 #get the 10,25,75,90th percentiles
 getPercentiles <- function(img) {
   i <- readImage(img)
@@ -75,6 +88,6 @@ print(rootMeanError)
 
 print("Writing data to files")
 #write data out to csv file for later use
-write.csv(data.predictions, "predictions.csv")
+write.csv(data.predictions, "predictions.csv", )
 write.csv(data.train, "train.csv")
 write.csv(data.test, "test.csv")

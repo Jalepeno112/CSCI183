@@ -1,3 +1,8 @@
+#NAME:        Giovanni Briggs
+#DATE:        4/6/15
+#CLASS:       CSCI183
+#ASSIGNMENT:  HW1   
+
 #import libraries
 require("ggplot2")
 require("doBy")
@@ -61,6 +66,7 @@ male_ctr_plot = ggplot(data=subset(merged_ctr,merged_ctr$Gender ==0),
 female_ctr_plot = ggplot(data=subset(merged_ctr,merged_ctr$Gender ==1),
                          aes(x=as.Date(timestamp), y= value, fill=age_group)) + geom_bar(position = "dodge", stat="identity") + ggtitle("Average Click Through Rate of Females across all Age Groups")
 
+#get the mean ctr of each group by age_group and gender
 ag_mean = aggregate(value ~ Gender + age_group,  merged_ctr, function(x) c(mean = mean(x)))
 ag_mean_plot = ggplot(data=ag_mean, 
                       aes(x = age_group, y = value, fill=factor(Gender, labels=c("Male","Female")))) + geom_bar(stat="identity", position="dodge") +  guides(fill=guide_legend(title="Gender"))+ ggtitle("Average CTR per Age Group")
@@ -83,6 +89,7 @@ catAgeGenderPlot <- ggplot(data=catAgeGenderSum, aes(x=category, y=category.len.
 catGenderSum <- summaryBy(category.len ~ Gender + category, data = merged_cat, FUN = sum)
 catGenderPlot <- ggplot(data=catGenderSum, aes(x=category, y=category.len.sum/sum(category.len.sum), fill = factor(Gender))) + geom_histogram(position="dodge", stat="identity") + ylab("Frequency") + xlab("Category") +ggtitle("Frequency By Category and Gender")
 
+#save plots
 ggsave("~/CSCI 183/HW1/catAge.png",catAgePlot)
 ggsave("~/CSCI 183/HW1/catAgeGender.png",catAgeGenderPlot)
 ggsave("~/CSCI 183/HW1/catGender.png",catGenderPlot)
@@ -91,4 +98,5 @@ ggsave("~/CSCI 183/HW1/catGender.png",catGenderPlot)
 clickedSum <- summaryBy(category.len ~ age_group + Gender, data = clicked_users, FUN = sum)
 clickedUserPlot <- ggplot(data=clickedSum, aes(x=age_group, y = category.len.sum/sum(category.len.sum), fill=factor(Gender))) + geom_histogram(position="dodge", stat="identity") + ggtitle("Frequency of Users who Click by Age Group and Gender") + ylab("Frequency")
 
+#save plot
 ggsave("~/CSCI 183/HW1/clickedUsers.png",clickedUserPlot)

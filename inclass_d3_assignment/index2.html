@@ -22,9 +22,24 @@
     .q7-9 { fill:rgb(8,81,156); }
     .q8-9 { fill:rgb(8,48,107); }
     
+
+    #legend {
+    padding: 1.5em 0 0 1.5em;
+    }
+
+    li.key {
+        border-top-width: 15px;
+        border-top-style: solid;
+        font-size: .75em;
+        width: 10%;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
         </style>
     <body>
         <h1>Ratio of People who Bike in each County</h1>
+        <div id="legend"></div>
         <script src="http://d3js.org/d3.v3.min.js"></script>
         <script src="http://d3js.org/queue.v1.min.js"></script>
         <script src="http://d3js.org/topojson.v1.min.js"></script>
@@ -35,12 +50,31 @@
             
             var rateById = d3.map();
             
-            //scale between 0 and 1
+            //scale between 0 and .4
+            //the min value in our dataset is 0 and the max is .39
             //map that scale to a css class color
+            var colors =  d3.scale.category10();
             var quantize = d3.scale.quantize()
             .domain([0, .40])
-            .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
+            .range(d3.range(9).map(function(i) { return colors(i); }));
             
+            var legend = d3.select('#legend')
+              .append('ul')
+                .attr('class', 'list-inline');
+
+            var keys = legend.selectAll('li.key')
+                .data(colors.range());
+
+            keys.enter().append('li')
+                .attr('class', 'key')
+                .style('border-top-color', String)
+                .text(function(d) {
+                    var r = colors.invertExtent(d);
+                    return formats.percent(r[0]);
+                });
+
+
+
             var projection = d3.geo.albersUsa()
             .scale(1280)
             .translate([width / 2, height / 2]);
