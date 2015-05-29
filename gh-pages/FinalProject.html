@@ -8,6 +8,11 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js" charset="utf-8"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.css" rel="stylesheet" type="text/css"/>
+    <script src ="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.js"></script>
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -102,20 +107,6 @@
           We can also look at  a player’s Combat Rating. Combat Rating is a metric that Bungie created to effectively rank player’s along a scale.
           </p>
 
-
-          <p>
-            Something that is also a lot of fun to look at is what the weapon breakdown is on each map.
-            If we see that certain weapons are more popular on certain maps or are used more frequently it may be because those weapons are more powerful or better suited for that map.
-            The fact that many players would follow this trend would indicate that they use those weapons because they have had better results with them.
-            In other words, they feel like they win more often using those weapons. 
-          </p>
-
-          <div id="weaponMapBreakdown">
-            <svg></svg>
-            <script src='jaavascripts/weaponMapBreakdown.js'></script>
-          </div>
-
-
           <img src ="images/graphs/combatRating_Victory.png"/>
 
           <p>
@@ -188,6 +179,8 @@
         </aside>
       </div>
     </div>
+
+  <script src='javascripts/weaponMapBreakdown.js'></script>
 
   
   </body>
