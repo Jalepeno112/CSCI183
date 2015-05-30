@@ -1,3 +1,4 @@
+var plotDiv = "#testPlot svg"
 var data = $.getJSON('datafiles/sniperRatioVictory.json', function(test_data){
     nv.addGraph({
         generate: function() {
@@ -10,18 +11,22 @@ var data = $.getJSON('datafiles/sniperRatioVictory.json', function(test_data){
                 .width(width)
                 .height(height)
                 .stacked(true)
+                .reduceXTicks(false)   //If 'false', every single x-axis tick label will be rendered.
                 ;
 
             chart.dispatch.on('renderEnd', function(){
                 console.log('Render Complete');
             });
 
-            var svg = d3.select('#sniperRatioVictoryPlot svg').datum(test_data);
+            var svg = d3.select(plotDiv).datum(test_data);
             console.log('calling chart');
             svg.transition().duration(0).call(chart);
 
             chart.yAxis
         		.tickFormat(d3.format(',.3f'));
+
+            chart.xAxis.rotateLabels(-45);
+
 
             chart.width(width);
             chart.height(height);
@@ -30,10 +35,10 @@ var data = $.getJSON('datafiles/sniperRatioVictory.json', function(test_data){
         callback: function(graph) {
             nv.utils.windowResize(function() {
                 var width = 700,
-                height = 600;
+                height = 700;
                 graph.width(width).height(height);
 
-                d3.select('#sniperRatioVictoryPlot svg')
+                d3.select(plotDiv)
                     .attr('width', width)
                     .attr('height', height)
                     .transition().duration(0)
