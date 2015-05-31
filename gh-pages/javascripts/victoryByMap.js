@@ -1,19 +1,18 @@
-//var plotDiv = "#sniperRatioVictoryPlot svg";
-var data = $.getJSON('datafiles/objectivesCompleted.json', function(test_data){
-    var plotDiv = "#testPlot svg";
+var data = $.getJSON('datafiles/victoryByMap.json', function(test_data){
+    //var plotDiv = "#testPlot svg"
+    var plotDiv = "#victoryByMap svg";
     var margin = {top: 20, right: 10, bottom: 20, left: 10};
     var width = 700 - margin.right - margin.left,
         height = 650 - margin.top - margin.bottom;
+    colors = ['#FF0000', '#0000FF']
     nv.addGraph({
-        generate: function() {
-
-
-            
+        generate: function() {            
             var chart = nv.models.multiBarChart()
                 .width(width)
                 .height(height)
-                .stacked(true)
+                .stacked(false)
                 .reduceXTicks(false)   //If 'false', every single x-axis tick label will be rendered.
+                .color(colors);
                 ;
 
             chart.yAxis
@@ -28,7 +27,10 @@ var data = $.getJSON('datafiles/objectivesCompleted.json', function(test_data){
 
             var svg = d3.select(plotDiv).datum(test_data);
             console.log('calling chart');
-            svg.attr('width', width).attr('height', height).transition().duration(0).call(chart);
+            svg.attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom)
+                .transition().duration(0)
+                .call(chart);
 
 
             return chart;
@@ -40,7 +42,6 @@ var data = $.getJSON('datafiles/objectivesCompleted.json', function(test_data){
                 d3.select(plotDiv)
                     .attr('width', width + margin.left + margin.right)
                     .attr('height', height + margin.top + margin.bottom)
-                    .transition().duration(0)
                     .transition().duration(0)
                     .call(graph);
 

@@ -14,6 +14,14 @@
     <script src ="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.js"></script>
     <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 
+    <style>
+      .plot {
+        outline: 2px solid;
+        margin: 10px 10px 10px 10px;
+
+      }
+    </style>
+
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -93,10 +101,14 @@
           Another interesting set of factors to look at is map. It is often argued that certain teams on certain maps always win.  This leads to people sometimes leaving a match because they believe that the odds are stacked against them.
           </p>
 
-          <img src="images/graphs/mapVictory.png"/> 
+           <div id="victoryByMap" class="plot">
+            <h2 style="text-align:center">Victory Rate for each Team by Map</h2>
+            <svg></svg>
+            <script src='javascripts/victoryByMap.js'></script>
+          </div>
 
           <p>
-          All things being equal, we would expect the victory rate for each team on any give map to be about 50%. According to this plot, that is not the case. Firebase Delphi has the most significant gap where Alpha Team wins 54% games versus Bravo Team who only wins 42% of their games. Note that the victory rates do not add up to 100% on any given map. That’s because the dataset isn’t evenly split into half Alpha team and half Bravo team. When a player quits a game they are still included in the set.
+          All things being equal, we would expect the victory rate for each team on any give map to be about 50%. According to this plot, that is not the case. Firebase Delphi has the most significant gap where <strong>Alpha Team</strong> wins almost <strong>56%</strong> games.  Anomaly has a similar problem except this time it is Bravo team that tends to dominate.
 
           It's also neat to look at the frequency that maps are played on.  This really has no impact on the conclusions I reached about victory on certain maps but it does show that some of the more heavily played maps actually have some of the worst bias.  Shores of Time is one of the more frequently played maps, and it is also one of the more heavily biased maps.
           </p>
@@ -125,7 +137,7 @@
 
           After rebuilding the dataset in this fashion, I then split the data into training and test sets and ran 10-fold repeated cross validation on them. This gave me the probabilities that a particular team would be given a 1 for their victory variable. A value of 1 actually corresponds to defeat (this is how it is stored in the Destiny Platform) I then took this output and ran it through a Python script that looked at each game and compared these probabilities. Within each game, the winning team is the team with the smaller probability, and the loser therefore the one with the higher probability. In the event that these probabilities are the same, one team is randomly chosen to be the victor.
 
-          This method gave me a root mean square error of 16%. This also only used a handful of features. I was also careful to avoid features that are dead giveaways for victory (like the actual team score).
+          This method gave me a root mean square error of <strong>14.5%</strong>. This also only used a handful of features. I was also careful to avoid features that are dead giveaways for victory (like the actual team score).
           </p>
 
           <h3>
@@ -169,7 +181,8 @@
             Be careful how heavily you rely on sniper rifles on certain maps.  
             While setting up shop and camping usually results in less deaths, teams who rely on snipers more heavily during a game tend to lose.
           </p>
-          <div id="sniperRatioVictoryPlot">
+          <div id="sniperRatioVictoryPlot" class="plot">
+            <h2 style="text-align:center">Sniper Rifle Usage Rate by Winners and Losers</h2>
             <svg></svg>
             <script src="javascripts/sniperRatioVictory.js"></script>
           </div>
@@ -180,7 +193,8 @@
           <p>
             Playing the objective is important.  Controling zones gives you a multiplier which is going to increase your average score per kill, and as you can see from the following graph, the average score per kill for winning teams is greater than the average score per kill for losing teams.
           </p>
-           <div id="averageScorePerKill">
+           <div id="averageScorePerKill" class="plot">
+            <h2 style="text-align:center">Average Score per Kill</h2>
             <svg></svg>
             <script src='javascripts/averageScorePerKill.js'></script>
           </div>
@@ -190,21 +204,33 @@
             You get the max multiplier per kill and its a way to show the other team that you own them.
             But according to the data, <strong>losing teams</strong> on average get more kills while dominating than winning teams.
           </p>
-          <div id="dominationByMap">
+          <div id="dominationByMap" class="plot">
+            <h2 style="text-align: center">Domination Kills by Map</h2>
             <svg></svg>
             <script src='javascripts/dominationKills.js'></script>
           </div>
           
           <p>
-            These two plots tell us a lot about the dynamics of Control.  
-            There has to be a balance between getting kills, and having each of those kills be worth a lot of points, but without having trying to control all 3 zones.
-            I've seen it happen often were a team goes for gets domination, but it's short lived as they can no longer contain the other team.
-            The team has spread themselves too thin, and so domination in the long run hurts them rather than helps.
+            At first this plot seems to make no sense (it didn't to me) until you recognize what happens when a team achieves domination.
+            When one team dominates, they usually cause a spawn flip to occur.  
+            The dominating team is no longer containing the other team because the game has started spawning them on the other side of the map.
+            We also have established that on certain maps, the positioning matters.  The team that spawns on one side is more likely to win.
+            Domination causes these locations to switch, effectively giving the other team the advantage for the rest of the game.
+
+            Long story short - domination isn't worth it.  Containing the other team in their spawn and mainting control of key locations is evidently more successful.
+           
           </p>
-        </br>
         <p>
           For more information on the weapon breakdown of each map click <a href="http://jalepeno112.github.io/CSCI183/gh-pages/weaponBreakdownMap.html">here</a>.
         </p>
+
+
+          <div id="weaponByClass" class="plot">
+            <h2 style="text-align: center">Weapon Usage by Class</h2>
+            <svg></svg>
+            <script src='javascripts/weaponByClass.js'></script>
+          </div>
+
 
         </section>
         <aside id="sidebar">
