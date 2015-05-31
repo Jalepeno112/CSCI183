@@ -1,12 +1,13 @@
 //var plotDiv = "#testPlot svg"
-var plotDiv = "#sniperRatioVictoryPlot svg";
-var data = $.getJSON('datafiles/sniperRatioVictory.json', function(test_data){
-    nv.addGraph({
-        generate: function() {
-            /*var width = nv.utils.windowSize().width,
+var data = $.getJSON('datafiles/averageScorePerKills.json', function(test_data){
+    var plotDiv = "#averageScorePerKill svg";
+                            /*var width = nv.utils.windowSize().width,
                 height = nv.utils.windowSize().height;*/
             var width = 700,
                 height = 600;
+    nv.addGraph({
+        generate: function() {
+
             
             var chart = nv.models.multiBarChart()
                 .width(width)
@@ -34,8 +35,7 @@ var data = $.getJSON('datafiles/sniperRatioVictory.json', function(test_data){
         },
         callback: function(graph) {
             nv.utils.windowResize(function() {
-                var width = 700,
-                height = 600;
+
                 graph.width(width).height(height);
 
                 d3.select(plotDiv)

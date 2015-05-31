@@ -1,18 +1,29 @@
-//var plotDiv = "#testPlot svg"
-var plotDiv = "#sniperRatioVictoryPlot svg";
-var data = $.getJSON('datafiles/sniperRatioVictory.json', function(test_data){
+var plotDiv = "#testPlot svg"
+//var plotDiv = "#sniperRatioVictoryPlot svg";
+var data = $.getJSON('datafiles/actualVsPredicted.json', function(test_data){
     nv.addGraph({
         generate: function() {
-            /*var width = nv.utils.windowSize().width,
-                height = nv.utils.windowSize().height;*/
-            var width = 700,
-                height = 600;
+
+          test_data.forEach(function(d,i){ 
+
+              d.values = d.values.sort(
+                  function(a,b){
+                     return +a.x -b.x;
+                  }
+              );
+           });
+
+            var width = nv.utils.windowSize().width,
+                height = nv.utils.windowSize().height;
+            /*var width = 700,
+                height = 600;*/
             
-            var chart = nv.models.multiBarChart()
+            var chart = nv.models.lineChart()
                 .width(width)
                 .height(height)
-                .stacked(true)
-                .reduceXTicks(false)   //If 'false', every single x-axis tick label will be rendered.
+                .useInteractiveGuideline(true)  //We want nice looking tooltips and a guideline!
+
+                //.reduceXTicks(false)   //If 'false', every single x-axis tick label will be rendered.
                 ;
 
             chart.yAxis
@@ -34,8 +45,11 @@ var data = $.getJSON('datafiles/sniperRatioVictory.json', function(test_data){
         },
         callback: function(graph) {
             nv.utils.windowResize(function() {
-                var width = 700,
-                height = 600;
+                /*var width = 700,
+                height = 600;*/
+                var width = nv.utils.windowSize().width,
+                height = nv.utils.windowSize().height;
+
                 graph.width(width).height(height);
 
                 d3.select(plotDiv)

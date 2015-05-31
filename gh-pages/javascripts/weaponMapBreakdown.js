@@ -3,8 +3,8 @@ var plotDiv = "#plot svg"
 var data = $.getJSON('datafiles/weapon_sums.json', function(test_data){
     nv.addGraph({
         generate: function() {
-            var width = nv.utils.windowSize().width + 100,
-                height = nv.utils.windowSize().height + 100;
+            var width = 700,
+                height = 700 ;
             
             var chart = nv.models.multiBarChart()
                 .width(width)
@@ -13,18 +13,19 @@ var data = $.getJSON('datafiles/weapon_sums.json', function(test_data){
                 .reduceXTicks(false)   //If 'false', every single x-axis tick label will be rendered.
                ;
 
+
+            chart.yAxis
+                .tickFormat(d3.format(',.3f'));
+
+            chart.xAxis.rotateLabels(-30);
+
             chart.dispatch.on('renderEnd', function(){
                 console.log('Render Complete');
             });
 
             var svg = d3.select(plotDiv).datum(test_data);
             console.log('calling chart');
-            svg.transition().duration(0).call(chart);
-
-            chart.yAxis
-        		.tickFormat(d3.format(',.3f'));
-
-            chart.xAxis.rotateLabels(-30);
+            svg.attr('width', width).attr('height', height).transition().duration(0).call(chart)
 
             return chart;
         },
