@@ -92,7 +92,7 @@
           <img src="images/graphs/top15WeaponsUsed.png"/>
 
           <p>
-          I then wanted to see how weapon usage is connected to victory. As you can see in the plot below, while these weapons are used very often, they don’t necessarily increase a player’s chance for victory. All of the weapons have a victory rate of about 50%.  The Stranger's Rifle is interesting to see here because it is a lower-tiered weapon than everything else.  This indicates that the tier of the weapon (i.e. Common, Rare, Legendary, Exotic) does not have an impact on a player's chances of winning.
+          I then wanted to see how weapon usage is connected to victory. As you can see in the plot below, while these weapons are used very often, they don’t necessarily increase a player’s chance for victory. All of the weapons have a victory rate of about 50%.  The Stranger's Rifle is interesting to see here because it is a lower-tiered weapon than everything else.  The Stranger's Rifle could also be considered an outlier as it is arguably the best rare-tierd weapon in the game.  The main point here is that while people prefer to use Legendary and Exoctic weapons, they seem to make no difference in a player's chance for winning.
           </p>
 
           <img src ="images/graphs/top15WeaponVictoryRate.png"/>
@@ -114,6 +114,17 @@
           </p>
 
           <img src="images/graphs/mapFrequency.png"/>
+
+          <p>
+            QUTING BY MAP
+          </p>
+
+          <div id="quittingByMap" class="plot">
+            <h2 style="text-align:center">Victory Rate for each Team by Map</h2>
+            <svg></svg>
+            <script src='javascripts/quittingByMap.js'></script>
+          </div>
+
 
           <p>
           We can also look at  a player’s Combat Rating. Combat Rating is a metric that Bungie created to effectively rank player’s along a scale.
@@ -152,7 +163,7 @@
           <a id="mvp" class="anchor" href="#mvp" aria-hidden="true"><span class="octicon octicon-link"></span></a>MVP
           </h4>
           <p>
-          For starters, always shoot to be the best player in the game. Seem simple and intuitive, but teams with the highest scoring player on them win over 80% of the time. This value deviates only slightly even if the team with the highest scoring player also has the lowest scoring player.
+          For starters, always shoot to be the best player in the game. Seem simple and intuitive, but teams with the highest scoring player on them win over 80% of the time. This value deviates only slightly even if the team with the highest scoring player also has the lowest scoring player.  So either be the best yourself or attach yourself to someone who is.
           </p>
           <img src='images/graphs/highLowVictory.png'/>
 

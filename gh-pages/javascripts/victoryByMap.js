@@ -4,7 +4,7 @@ var data = $.getJSON('datafiles/victoryByMap.json', function(test_data){
     var margin = {top: 20, right: 10, bottom: 20, left: 10};
     var width = 700 - margin.right - margin.left,
         height = 650 - margin.top - margin.bottom;
-    colors = ['#FF0000', '#0000FF']
+    var colors = ['#FF0000', '#0000FF']
     nv.addGraph({
         generate: function() {            
             var chart = nv.models.multiBarChart()

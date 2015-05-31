@@ -143,7 +143,7 @@ def getInventoryItemOnline(itemHash):
     return r.json()
 
 
-
+MANIFEST_CONN = sqlite3.connect(CONFIG['MANIFEST_FILE'])
 
 def getItemFromManifest(table, hash):
     """
@@ -152,8 +152,11 @@ def getItemFromManifest(table, hash):
     :param table:       name of the table within the manifest we want to look in
     :param hash:        hash id value
     """
-    manifest_conn = sqlite3.connection(CONFIG['MANIFEST'])
+    c = MANIFEST_CONN.cursor()
+    c.execute("select * from {0} where id = {1}".format(table, hash))
+    response = c.fetchone()
 
+    return respose
 
 def fetchFile(url, local_filename):
     r = requests.get(url, stream=True)
@@ -175,6 +178,14 @@ def fetchAndUnzip(url):
         z.extractall()
     except:
         raise
+
+def getMapName(hash):
+    url = "http://www.bungie.net/Platform/Destiny/Manifest/activity/{0}".format(int(hash))
+    r = requests.get(url)
+    if r != 200:
+        r.raise_for_status()
+    data = r.json()
+    return data['Response']['data']['activity']['activityName']
 
 def fetchManifest():
     """

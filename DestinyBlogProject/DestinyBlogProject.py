@@ -6,6 +6,7 @@ import logging
 import sys
 import argparse
 import multiprocessing
+import time
 
 logging.getLogger("requests").setLevel(logging.WARNING)
 
@@ -18,7 +19,7 @@ ch.setLevel(logging.INFO)
 filehndlr = logging.FileHandler("log.log")
 filehndlr.setLevel(logging.DEBUG)
 
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(process)d - %(levelname)s - %(message)s')
 ch.setFormatter(formatter)
 filehndlr.setFormatter(formatter)
 
@@ -163,10 +164,12 @@ def getGame(membershipId, uniqueGameIds=[]):
                          'weaponKillsPulseRifle','weaponKillsFusionRifle', 'weaponKillsScoutRifle','weaponKillsRocketLauncher',
                          'weaponKillsAutoRifle', 'weaponKillsMachinegun', 'weaponKillsHandCannon',
                          'killsOfPlayerHunter', 'killsOfPlayerTitan','killsOfPlayerWarlock',
-                         'deathsOfPlayerHunter','deathsOfPlayerTitan','deathsOfPlayerWarlock',
+                         'deathsOfPlayerHunter','deathsOfPlayerTitan','deathsOfPlayerWarlock', 
+                         "medalsDominationKill", "zonesNeutralized"
                          ]
         #not everyone has those keys.  The weaponKill keys only occur if a player had a kill with that weapon
         #check to see if the key exists, if it does get the value, else fill with 0
+        #
         for k in extended_keys:
             if k in player['extended']['values']:
                 player_data[k] = player['extended']['values'][k]['basic']['value']
@@ -445,6 +448,79 @@ def _addMachinegunKills(game_data):
 
         count = count + 1
     game_data.to_csv("data_post_houseOfWolvesUpdate.csv", encoding='utf-8')
+
+def _addFeatureMultiProcess(game_data, func, **kwargs):
+    """
+    Add a new feature to a dataframe by chunking the dataframe and then applying a function over the chunks.
+    Each chunk will then have the new feature, and these chunks can be joined back together in order to create an update dataframe.
+
+    .. note::
+        The function you pass must modify the dataframe **and** return it.
+    """
+    start = time.time()
+    p = multiprocessing.Pool(4)
+
+    #group the dataframe by map to make for nice chunks of data
+    #then place each chunk in a list so we can iterate over it
+    groupByMap = game_data.groupby('refrencedId')
+    game_list = [game for name, game in groupByMap]
+
+    update_games = p.map(func, game_list)
+    
+    #mapped_list is a list of tuples. The first item in the tuple is a 1 or 0 indicate successful completion
+    #second is the dataframe
+    #concat the dataframes together and then drop duplicates
+    #p.join()
+
+    duration = time.time() - start
+    logger.info("Data fetched in {0} seconds".format(duration))
+
+    logger.info("Building dataframe from chunks and writing to file")
+    game_data = pd.concat([g for g in update_games], ignore_index=True)
+    game_data = game_data.drop_duplicates()
+    game_data.to_csv("data_updated_multi.csv")
+
+    return game_data
+
+def _addDominationMedals(game_data):
+    game_data['dominationKills'] = 0
+    groupByGame = game_data.groupby("gameId")
+
+    totalGames = len(groupByGame)
+    count = 1
+    for group in list(groupByGame.groups.keys()):
+        logger.info("Grabbing game {0}; {1} out of {2}".format(group, count, totalGames))
+        game_json = destiny.getPvPGame(group)
+        for player in game_json['Response']['data']['entries']:
+            memId = player['player']['destinyUserInfo']['membershipId']
+            if "medalsDominationKill" in player['extended']['values']:
+                game_data['dominationKills'] = player['extended']['values']['medalsDominationKill']['basic']['value']
+        count = count + 1
+    return game_data
+
+def _addZonesNeutralized(game_data):
+
+
+def _addGrenadeKills(game_data):
+    logger.info("Adding Grenade and Relic Kill values for all games")
+    game_data['weaponKillsGrenade'] = 0
+    game_data['weaponKillsRelic'] = 0
+    groupByGame = game_data.groupby('gameId')
+
+    totalGames = len(groupByGame)
+    count = 1
+    for group in list(groupByGame.groups.keys()):
+        logger.info("Grabbing for game {0}; {1} out of {2}".format(group, count, totalGames))
+        game_json = destiny.getPvPGame(group)
+        for player in game_json['Response']['data']['entries']:
+            memId = player['player']['destinyUserInfo']['membershipId']
+            if 'weaponKillsGrenade' in player['extended']['values']:
+                game_data.ix[(game_data['gameId'] == group) & (game_data['membershipId'] == int(memId)), 'weaponKillsGrenade'] = player['extended']['values']['weaponKillsGrenade']['basic']['value']                
+            if 'weaponKillsRelic' in player['extended']['values']:
+                 game_data.ix[(game_data['gameId'] == group) & (game_data['membershipId'] == int(memId)), 'weaponKillsRelic'] = player['extended']['values']['weaponKillsRelic']['basic']['value']
+        count = count + 1
+    return game_data
+    #game_data.to_csv("data_updated.csv", encoding='utf-8')
 
 def _mergeOldAndNew():
     new_data = pd.read_csv("data_post_houseOfWolves.csv")

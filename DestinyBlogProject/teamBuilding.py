@@ -65,6 +65,7 @@ def groupByTeam(dataFileName):
 			teamDict['averageScorePerKill'] = teamData['averageScorePerKill'].mean()
 			teamDict['assists'] = teamData['assists'].sum()
 			teamDict['assistsAvg'] = teamData['assists'].mean()
+			teamDict['kills'] = teamData['kills'].sum()
 			
 			teamDict['hunters'] = len(teamData[teamData['characterClass'] == "Hunter"])
 			teamDict['titans'] = len(teamData[teamData['characterClass'] == "Titan"])
@@ -105,36 +106,28 @@ def groupByTeam(dataFileName):
 			teamDict['objectivesCompleted'] = teamData['objectivesCompleted'].sum()
 			teamDict['objectivesCompletedAvg'] = teamData['objectivesCompleted'].mean()
 
-			teamDict['weaponKillsHeavy'] = teamData['weaponKillsMachinegun'].sum() + teamData['weaponKillsRocketLauncher'].sum()
-			teamDict['weaponKillsPrimary'] = teamData['weaponKillsPulseRifle'].sum() + teamData['weaponKillsAutoRifle'].sum() + teamData['weaponKillsScoutRifle'].sum() +teamData['weaponKillsHandCannon'].sum()
-			teamDict['weaponKillsSecondary'] = teamData['weaponKillsShotgun'].sum() + teamData['weaponKillsSniper'].sum() +teamData['weaponKillsFusionRifle'].sum() + teamData['weaponKillsSideArm'].sum()
-
 			#get the number of exotic and legendary weapons that a team used
 			teamDict['numberOfExotics'] = len(teamData.ix[teamData['mostUsedWeapon1Tier'] == 'Exotic', 'mostUsedWeapon1Tier']) + len(teamData.ix[teamData['mostUsedWeapon2Tier'] == 'Exotic', 'mostUsedWeapon2Tier'])
 
 			teamDict['numberOfLegendaries'] = len(teamData.ix[teamData['mostUsedWeapon1Tier'] == 'Legendary', 'mostUsedWeapon1Tier']) + len(teamData.ix[teamData['mostUsedWeapon2Tier'] == 'Legendary', 'mostUsedWeapon2Tier'])
 
-			weaponKeys = [
-				'weaponKillsAutoRifle',
-				'weaponKillsFusionRifle',
-				'weaponKillsMelee',
-				'weaponKillsPulseRifle',
-				'weaponKillsRocketLauncher',
-				'weaponKillsMachinegun',
-				'weaponKillsHandCannon',
-				'weaponKillsScoutRifle',
-				'weaponKillsShotgun',
-				'weaponKillsSniper',
-				'weaponKillsSuper',
-				'weaponKillsSideArm',
-				]
+			weaponKeys = [c for c in list(teamData.columns) if 'weapon' in c]
+			
 			for w in weaponKeys:
 				teamDict[w] = teamData[w].sum()
+
+			teamDict['weaponKillsHeavy'] = teamData['weaponKillsMachinegun'].sum() + teamData['weaponKillsRocketLauncher'].sum()
+			teamDict['weaponKillsPrimary'] = teamData['weaponKillsPulseRifle'].sum() + teamData['weaponKillsAutoRifle'].sum() + teamData['weaponKillsScoutRifle'].sum() +teamData['weaponKillsHandCannon'].sum()
+			teamDict['weaponKillsSecondary'] = teamData['weaponKillsShotgun'].sum() + teamData['weaponKillsSniper'].sum() +teamData['weaponKillsFusionRifle'].sum() + teamData['weaponKillsSideArm'].sum()
+
+
 
 			teamDict['longestKillSpree'] = teamData['longestKillSpree'].mean()
 		
 			teamDict['highestScore'] = teamData['score'].max()
-			teamDict['lowestScore'] = teamData['score'].min()			
+			teamDict['lowestScore'] = teamData['score'].min()	
+
+			teamDict['dominationKills'] = teamData['dominationKills'].sum()
 
 			#add to list
 			teamBreakdown.append(teamDict)
