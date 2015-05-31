@@ -1,5 +1,9 @@
 //var plotDiv = "#testPlot svg"
+<<<<<<< HEAD
 var plotDiv = "#sniperRatioVictoryPlot svg";
+=======
+var plotDiv = "#sniperRatioVictoryPlot svg"
+>>>>>>> e2ba55775f866cfb860f91e791beeaf6c1cd566b
 var data = $.getJSON('datafiles/sniperRatioVictory.json', function(test_data){
     nv.addGraph({
         generate: function() {
