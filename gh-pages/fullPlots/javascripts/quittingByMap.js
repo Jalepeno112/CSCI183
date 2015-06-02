@@ -1,18 +1,23 @@
 //var plotDiv = "#testPlot svg"
-var data = $.getJSON('datafiles/dominationKills.json', function(test_data){
-    var plotDiv = "#dominationByMap";
+var False = false;
+var None = null;
+
+
+var data = $.getJSON('datafiles/quittingByMap.json', function(test_data){
+    var plotDiv = "#quittingByMap";
     var plotSvg = plotDiv + " svg";
-    var margin = {top: 20, right: 10, bottom: 10, left: 10};
+    var margin = {top: 20, right: 50, bottom: 10, left: 50};
 
     nv.addGraph({
         generate: function() {   
-            width = $(plotDiv).width() - margin.right - margin.left,
-            height = ($(plotDiv).height()*3) - margin.top - margin.bottom;
+            var width = $(plotDiv).width() - margin.right - margin.left,
+                height = ($(plotDiv).height()*3) - margin.top - margin.bottom;
+
             var chart = nv.models.multiBarChart()
                 .width(width)
                 .height(height)
-                .stacked(false)
-                .reduceXTicks(false)   //If 'false', every single x-axis tick label will be rendered.
+                .stacked(False)
+                .reduceXTicks(False)   //If 'false', every single x-axis tick label will be rendered.
                 ;
 
             chart.yAxis

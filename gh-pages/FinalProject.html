@@ -50,25 +50,29 @@
           </br>
 
           <h3><a id="post" class="anchor" href="#post" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overview</h3>
-          <p>In many video games, the opportunity for player to receive loot is tied to their performance. Victory in story missions or against other players in competitive multiplayer is directly tied to getting bigger and better weapons and armor. <a href= "http://bungie.net">Bungie’s Destiny </a> hasn’t always been a shining example of this (in fact it is often the antithesis of this) but after the most recent update with the release of House of Wolves, players are now more rewarded more frequently if they win multiplayer matches.
+          <p>
+            In many video games, the opportunity for player to receive loot is tied to their performance. Victory in story missions or against other players in competitive multiplayer is directly tied to getting bigger and better weapons and armor. <a href= "http://bungie.net">Bungie’s Destiny </a> hasn’t always been a shining example of this (in fact it is often the antithesis of this) but after the most recent update with the release of House of Wolves, players are now rewarded more frequently if they win multiplayer matches.
+          </br></br>
+            The point of this project is to examine trends within Destiny’s competitive multiplayer games. The idea is that if I can find a model that accurately predicts who wins and who loses, then we can find tangible things players can do in order to boost their chances of winning (and getting more loot).
+          </br></br>
+            For this project, I created two dataset by doing a random walk through some post game data (also referred to as Post Game Carnage Reports).  Bungie stores all of this data online and it is publicly accessible through a REST API.  The first dataset was created about a week before the release of House of Wolves, and the other dataset was created about a week after.  The reason for doing the second dataset after the release of House of Wolves was to show that the trends that I discuss in this project do not only pertain to pre-House of Wolves Destiny.  After any major update, there is a large amount of flux happening in the community.  New weapons, armor, maps, and level cap change the game.  I think using data from this time-frame strengthens the findings of this project.  These findings do not just hold true to the pre-House of Wolves games, but hold true right now.
+            </br></br>
+            The datasets were then combined to create one large rectangular matrix with over 150,000 rows and 60 columns. This boils down to only being about 11,500 games worth of information. When considering the number of games of Destiny that have been played over time, this number is very small, but I do feel it is large and diverse enough to be an accurate sample of the data.
+          </br></br>
 
-          The point of this project is to examine trends within Destiny’s competitive multiplayer games. The idea is that if I can find a model that accurately predicts who wins and who loses, then we can find tangible things players can do in order to boost their chances of winning, and therefore boost their chances for better loot.
+            I used a mixture of R and Python to complete this project.
+            A lot of the initial exploratory data analysis was done in R, but everything else was done in Python.
 
-
-          For this project, I created two dataset by doing a random walk through some post game data (also referred to as Post Game Carnage Reports).  Bungie stores all of this data online and it is publicly accessible through their website, and through a REST API.  The first dataset was created about a week before the release of House of Wolves, and the other dataset was created about a week after.  The reason for doing the second dataset after the release of House of Wolves was to show that the trends that I discuss in this project do not only pertain to pre-House of Wolves Destiny.  After any major update, there is a large amount of flux happening in the community.  New weapons, armor, maps, and level cap change the game.  I think using data from this time-frame strengthens the findings of this project.  These findings do not just hold true to the pre-House of Wolves games, but hold true right now.
-
-          The datasets were then combined to create one large rectangular matrix with over 150,000 rows and 60 columns. This boils down to only being about 11,000 games worth of information. When considering the number of games of Destiny that have been played over time, this number is very small, but I do feel it is large and diverse enough to be an accurate sample of the data.
-
-          I used a mixture of R and Python to complete this project. I used Python with pandas to get the data and to format the dataset but used R for the actual modeling and then cleaned off the predictions in Python.  All graphs in this post were also created in R.
+            You can get the code from <a href="https://github.com/Jalepeno112/CSCI183/tree/gh-pages/DestinyBlogProject"> this github repo </a>
           </p>
 
           <h3>
           <a id="buildingdataset" class="anchor" href="#buildingdataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Building the Dataset</h3>
           <p>
           Bungie has a REST API (that they call the <a href="http://www.bungie.net/platform/Destiny/help/">Destiny Platform</a>) that can be used to get Post Game Carnage Reports. A user makes a request, and the server sends them back a nice JSON file to parse. I had been working on a small Python library to handle making requests to the Destiny Platform and I had just enough of it developed to be able to use on this project. It handles requesting data and checking for errors that occur during that process.
-
+        </br></br>
           I then built another Python script that utilizes that library to do a “random walk” through Post Game Carnage Reports. This random walk does the following: given a player’s name get their most recent game, then pick a player from that game and get their most recent game that isn’t the same as one that we already have, and then pick another player from that game and so on. I was having a problem where this fetch process would die every so often due to errors between my interface and the Destiny Platform (the source of which I still haven’t fully figured out). In order to deal with this, I created a list of starting players, and if an error occurs, the random walk jumps to the next player in the list and starts from there. This list of “anchors” includes myself and 8 other people that I know play frequently. That way, I know that their most recent game is actually recent.
-
+        </br></br>
           This dataset is biased in that it only looks at one gametype – Control. That means that the findings from this project apply to Control, but not necessarily to all other gametypes. The reasons for picking Control are:
           
           <ol>
@@ -76,8 +80,9 @@
             <li>It’s team based </li>
             <li>There are objectives other than straight kill the other player</li>
           </ol>
+        </br></br>
           I think each of these reasons is significant. Since Control is very popular, that means more people care about what how to optimize their performance for it. The fact that it’s team based adds an extra layer of complexity. Someone doesn’t need to have the highest score in order to win a game (and they can still have that score and lose a game), and my model needs to make use of features that take this into account. Objectives also throw an extra layer of dimension. In Clash, the goal the simply to kill the other team more often than they kill you. The team with the highest number of kills, and the least number of deaths, is going to win which is not necessarily true in Control. While the kills and victory are strongly correlated, having more kills than the other team doesn't always mean victory.
-
+        </br></br>
           Every row in the dataset is a different player from a different game. There are repeat players in the dataset, but they always belong to a different game. Every column in the dataset is a different feature that I thought might be helpful in predicting who wins and who loses. The only column name which might be confusing is the “refrencedId” column, which was a typo of “referenceId” which tells you what map the match was played on. 
           </p>
           <h3>
@@ -86,7 +91,7 @@
 
           <p>
           After building the dataset, I pulled it into R to take a quick look at some trends in the data. There were a lot of them, but I am only including the ones that I found to be the most interesting.
-
+        </br></br>
           One of the first trends I went to look at was player weapon usage. From personal experience, it often feels as though the same weapons are used all the time, so I wanted to see if that was true. It turns out, that the top 15 weapons account for just over 50% of all usage.  While creating the dataset, I looked at the two weapons that a player had the most kills with that game.  Some of the top 15 most used weapons also appear in the top 15 second most used weapons. For example, Felwinter's Lie for some people is their most used weapon at the end of a game, but is other player’s second most used weapon at the end of a game.
           </p>
           <img src="images/graphs/top15WeaponsUsed.png"/>
@@ -109,18 +114,18 @@
 
           <p>
           All things being equal, we would expect the victory rate for each team on any give map to be about 50%. According to this plot, that is not the case. Firebase Delphi has the most significant gap where <strong>Alpha Team</strong> wins almost <strong>56%</strong> games.  Anomaly has a similar problem except this time it is Bravo team that tends to dominate.
-
+        </br></br>
           It's also neat to look at the frequency that maps are played on.  This really has no impact on the conclusions I reached about victory on certain maps but it does show that some of the more heavily played maps actually have some of the worst bias.  Shores of Time is one of the more frequently played maps, and it is also one of the more heavily biased maps.
           </p>
 
           <img src="images/graphs/mapFrequency.png"/>
 
           <p>
-            QUTING BY MAP
+            We can also look at which maps have the worst quit rate.  Losing a team member can definitely set a team back, and as we can see, certain teams tend to quit more on maps than others.  This also seems to be corelated to victory rate of a team on a given map.
           </p>
 
           <div id="quittingByMap" class="plot">
-            <h2 style="text-align:center">Victory Rate for each Team by Map</h2>
+            <h2 style="text-align:center">Quitting Rate for each Team by Map</h2>
             <svg></svg>
             <script src='javascripts/quittingByMap.js'></script>
           </div>
@@ -144,10 +149,11 @@
           <p>
           The first step I took in predicting victory was to do a quick random forest on the data and see what happened. Doing this gave me a root mean square error of over 50%. This is unsurprising since this model attempted to predict a player’s victory based on their own stats and therefore players on the same team were being given different victory rates.
 
+        </br></br>
           The next step was then to melt the dataset down into a team based dataset instead of a player based dataset. Each game would have two vectors associated with it – one for Alpha team and one for Bravo team. The features of each team were built off of the data of the player’s of each team.
 
           After rebuilding the dataset in this fashion, I then split the data into training and test sets and ran 10-fold repeated cross validation on them. This gave me the probabilities that a particular team would be given a 1 for their victory variable. A value of 1 actually corresponds to defeat (this is how it is stored in the Destiny Platform) I then took this output and ran it through a Python script that looked at each game and compared these probabilities. Within each game, the winning team is the team with the smaller probability, and the loser therefore the one with the higher probability. In the event that these probabilities are the same, one team is randomly chosen to be the victor.
-
+        </br></br>
           This method gave me a root mean square error of <strong>14.5%</strong>. This also only used a handful of features. I was also careful to avoid features that are dead giveaways for victory (like the actual team score).
           </p>
 
@@ -175,7 +181,6 @@
           Being on a team with friends also increases chances for winning. The less fireteams on a team, thereby the more friends you being into a match with you, the more likely you are to win.
           </p>
           <img src='images/graphs/fireteamVictory.png'/>
-
 
           <h4>
           <a id="withabang" class="anchor" href="#withabang" aria-hidden="true"><span class="octicon octicon-link"></span></a>Send them out with a bang
@@ -227,21 +232,26 @@
             The dominating team is no longer containing the other team because the game has started spawning them on the other side of the map.
             We also have established that on certain maps, the positioning matters.  The team that spawns on one side is more likely to win.
             Domination causes these locations to switch, effectively giving the other team the advantage for the rest of the game.
-
+</br></br>
             Long story short - domination isn't worth it.  Containing the other team in their spawn and mainting control of key locations is evidently more successful.
            
           </p>
+
+        </br></br>
         <p>
-          For more information on the weapon breakdown of each map click <a href="http://jalepeno112.github.io/CSCI183/gh-pages/weaponBreakdownMap.html">here</a>.
+          These are only a few items that I gathered from the dataset, but it does appear that there are things that players can do to increase their chances for victory.
         </p>
 
-
-          <div id="weaponByClass" class="plot">
-            <h2 style="text-align: center">Weapon Usage by Class</h2>
-            <svg></svg>
-            <script src='javascripts/weaponByClass.js'></script>
-          </div>
-
+        <h4>
+        <a id="conclusion" class="anchor" href="#conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion
+        </h4>
+        <p>
+          There is a lot more to gain from the Destiny API.  
+          This is only data from Control, it would be interesting to look at other gametypes and see how the gametype changes player behavior.
+          It would also be interesting to try and apply the Control model to other gametypes.  
+          The place that this might have the most impact is in the Trails of Osiris gametype.  
+          The stakes in that gamemode are so high, that being able to determine victory would be huge.
+        </p>
 
         </section>
         <aside id="sidebar">
