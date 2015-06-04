@@ -4,6 +4,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import mean_squared_error
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2, f_regression
 from math import sqrt
 
 import pandas as pd
@@ -53,7 +55,8 @@ if __name__ == "__main__":
 	train = teamData.ix[0:len(teamData)/2, ]
 	test = teamData.ix[(len(teamData)/2 + 1):len(teamData), ]
 
-	features = ['characterLevel', 
+	#print train[[c for c in train.columns if c != "standing" and c!="date"].columns
+ 	features = ['characterLevel', 
 				'combatRating',
 				'combatRatingStd', 
 				'killsDeathsRatio',
@@ -73,11 +76,14 @@ if __name__ == "__main__":
   				'dominationKills',
   				]
 
+  	print(train[features].shape)
+  	X_new = SelectKBest(f_regression).fit_transform(train[features], train['standing'])
+ 	print X_new.shape
+
 	print("Building random forest!")  			
   	randomForest = RandomForestClassifier(n_estimators=200, )
   	randomForest.fit(train[features], train['standing'])
   
-
   	#predictions = randomForest.predict(test[features])
   	#get the probability that the team wins and that it loses
   	predictions = randomForest.predict_proba(test[features])
@@ -90,8 +96,11 @@ if __name__ == "__main__":
   		"team":test['team'], 
   		"probabilityOfVictory":[i[0] for i in predictions]})
 
+  	#given the probabilities of victory (and defeat) and turn those into 0s and 1s
   	submission = predictWinners(submission)
 
   	rms = sqrt(mean_squared_error(test['standing'], submission['standing']))
 
   	print("RMSE: {0}".format(rms))
+
+  	submission.to_csv("submission.csv")

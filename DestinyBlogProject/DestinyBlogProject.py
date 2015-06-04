@@ -42,8 +42,7 @@ def getGame(membershipId, uniqueGameIds=[]):
     character_index = character_levels.index(max(character_levels))
     character = character_info[character_index]
 
-    #get the most recent game BEFORE 5/15/15
-    #they changed a lot of the data storage
+    #get a game
     games_to_fetch = 1
     try:
         most_recent = destiny.getMostRecentPvPGames(membershipId,character['characterBase']['characterId'],count = games_to_fetch, mode='Control')
@@ -165,11 +164,10 @@ def getGame(membershipId, uniqueGameIds=[]):
                          'weaponKillsAutoRifle', 'weaponKillsMachinegun', 'weaponKillsHandCannon',
                          'killsOfPlayerHunter', 'killsOfPlayerTitan','killsOfPlayerWarlock',
                          'deathsOfPlayerHunter','deathsOfPlayerTitan','deathsOfPlayerWarlock', 
-                         "medalsDominationKill", "zonesNeutralized"
+                         "medalsDominationKill", "zonesNeutralized",
                          ]
         #not everyone has those keys.  The weaponKill keys only occur if a player had a kill with that weapon
         #check to see if the key exists, if it does get the value, else fill with 0
-        #
         for k in extended_keys:
             if k in player['extended']['values']:
                 player_data[k] = player['extended']['values'][k]['basic']['value']
@@ -205,26 +203,8 @@ def getGame(membershipId, uniqueGameIds=[]):
              player_data['mostUsedWeapon1Kills'] = 0
              player_data['mostUsedWeapon2'] = 0
              player_data['mostUsedWeapon2Kills'] = 0
-
-
-        #get the weapon types
-        #this requires us to make extra requests out to the Destiny Platform API
-        #columnTitles = ['mostUsedWeapon1', 'mostUsedWeapon2']
-        #for t in columnTitles:
-        #    if player_data[t] == 0:
-        #        player_data[t+'Name'] = 0
-        #        player_data[t+'Tier'] = 0
-        #        player_data[t+'Type'] = 0
-        #    else:
-        #        definition = destiny.getInventoryItemOnline(player_data[t])
-        #        if definition['ErrorStatus'] == 'Success':
-        #            logger.info("Adding data for {0}".format(i))
-        #            player_data[t+'Name'] = definition['Response']['data']['inventoryItem']['itemName']
-        #            player_data[t+'Tier'] = definition['Response']['data']['inventoryItem']['tierTypeName']
-        #            player_data[t+'Type'] = definition['Response']['data']['inventoryItem']['bucketTypeHash']
-
         
-        #get player data
+        #get simple character data
         player_keys = ['characterLevel', 'characterClass']
         for k in player_keys:
             if k in player['player']:
@@ -232,12 +212,10 @@ def getGame(membershipId, uniqueGameIds=[]):
             else:
                 player_data[k] = None
 
-        #get specific weapon usage data
-        #TODO:  find creative way to handle different weapon usage
-        #possibly only grab player's most used weapon
-        #and then do typing based on that
+        #append to list
         all_player_data.append(player_data)
     
+    #build a dataframe from our list of dicitonaries
     game_details = pd.DataFrame.from_records(all_player_data)
 
     return game_details
@@ -356,6 +334,11 @@ def runBlogProject(start_user = ["Jalepeno112"], num_games=1000, datafilename = 
     #second is the dataframe
     #concat the dataframes together and then drop duplicates
     game_data = pd.concat([t[1] for t in mapped_list], ignore_index=True)
+
+    #add weapon type, name, and class info
+    #it's faster to do it after the dataframe has been built.
+    #That way we only make as many requests as there are unique weapons
+    game_data = _adjustData(game_data)
 
     game_data = game_data.drop_duplicates()
 
@@ -497,9 +480,6 @@ def _addDominationMedals(game_data):
                 game_data['dominationKills'] = player['extended']['values']['medalsDominationKill']['basic']['value']
         count = count + 1
     return game_data
-
-def _addZonesNeutralized(game_data):
-
 
 def _addGrenadeKills(game_data):
     logger.info("Adding Grenade and Relic Kill values for all games")

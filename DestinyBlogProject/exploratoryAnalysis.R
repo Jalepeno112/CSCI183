@@ -28,6 +28,7 @@ print(ggplot(data = topWeapons,
              aes(x=mostUsedWeapon1Name, y=X.length/nrow(data), fill=mostUsedWeapon1Name)) + 
         geom_bar(stat='identity') + 
         ggtitle("Top 15 Weapons Used") + 
+        labs(x= "Weapon Name", y="Usage Rate", fill="Weapon Name")+
         theme(axis.text.x = element_text(angle = 90, hjust = 1)))
 
 topWeapons_sub = subset(data, data$mostUsedWeapon1Name %in% topWeapons$mostUsedWeapon1Name)
@@ -88,12 +89,12 @@ print(ggplot(data=grouped.byMapFreq,
 quitters <- subset(data, data$completed == 0)
 quitters <- subset(quitters, quitters$team != -1)
 groupQuitters.byMap <- summaryBy(X ~ refrencedId + team, data=quitters, FUN=length)
-groupQuitters.byMap$mapName <- unlist(lapply(grouped.byMapFreq$refrencedId, 
+groupQuitters.byMap$mapName <- unlist(lapply(groupQuitters.byMap$refrencedId, 
                                            FUN = function(x){getMapName(destiny.manifest,x)}))
 quitMapPlot <- ggplot(data=groupQuitters.byMap, 
-                      aes(x=mapName, y=X.length, fill=factor(team), color=factor(team))) +
-  geom_bar(stat='identity')+
-  labs(x='Map Name', fill='Team', color='Team') +
+                      aes(x=mapName, y=X.length, fill = factor(team, labels=c('Alpha','Bravo')))) +
+  geom_bar(stat='identity', position='dodge')+
+  labs(x='Map Name', fill='Team', color='Team', y="Number Of Quitters") +
   ggtitle("Quiting by Map and Team")+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 print(quitMapPlot)

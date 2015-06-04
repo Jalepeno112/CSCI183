@@ -92,7 +92,7 @@ grouped.byMapAndSecondary <- summaryBy(standing ~ refrencedId +
 formula <- standing ~ characterLevel + combatRating + killsDeathsRatio + defensiveKills +
   offensiveKills + objectivesCompleted + killsDeathsAssists + refrencedId + team + 
   hasHighestScoringPlayer + hasLowestScoringPlayer + weaponKillsSuper + numberOfFireTeams +
-  numberOfExotics + numberOfLegendaries + combatRatingStd + weaponKillsHeavy
+  numberOfExotics + numberOfLegendaries + combatRatingStd + weaponKillsHeavy + players
 
 #10 fold CV 
 print("Running 10 fold CV")
@@ -117,3 +117,49 @@ rootMeanError <- rmse(data.predictions$standing, teamData.test$standing)
 print(rootMeanError)
 
 write.csv(data.predictions, "predictions_raw.csv", row.names=FALSE)
+
+
+#look at kill ratios per map
+#basically take the total number of kills with one type of weapon versus the total number of kills
+#group them by map and victory and look for trends
+
+#get the total number of kills per map and standing (0 for victory, 1 for defeat)
+killsPerMap <- summaryBy(kills ~ refrencedId + standing, data= teamData, FUN=sum)
+
+#sniper usage
+sniperUsageByMap <- summaryBy(weaponKillsSniper ~ refrencedId + standing, data = teamData, FUN=sum)
+sniperUsageByMap$mapName <- unlist(lapply(sniperUsageByMap$refrencedId, 
+                                          FUN = function(x){getMapName(destiny.manifest,x)}))
+sniperUsagePlot <- ggplot(data=sniperUsageByMap, 
+                          aes(x=mapName, y=weaponKillsSniper.sum/killsPerMap$kills.sum, fill=factor(standing, labels=c('Winner', 'Loser')))) +
+  geom_bar(stat='identity', position='dodge') +
+  labs(x='Map Name', fill='Team', y="Number Of Sniper Kills / Total Kills") +
+  ggtitle("Sniper Ratio by Map and Team")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+plot(sniperUsagePlot)
+
+#hand cannon usage
+handCannonUsage <- summaryBy(weaponKillsHandCannon ~refrencedId + standing, data = teamData, FUN=sum)
+handCannonUsage$mapName <- unlist(lapply(handCannonUsage$refrencedId, 
+                                          FUN = function(x){getMapName(destiny.manifest,x)}))
+
+print(ggplot(data=handCannonUsage, 
+             aes(x=mapName, y=weaponKillsHandCannon.sum / killsPerMap$kills.sum, fill=factor(standing,labels=c('Winners','Loosers'))))+
+        geom_bar(stat='identity', position = 'dodge') +
+        labs(x='Map Name', y = 'Hand Cannon Kills / Total Kills', fill='Standing') + 
+        ggtitle('Victory Rate by Hand Cannon Usage')+
+        theme(axis.text.x = element_text(angle = 90, hjust = 1)))
+
+pulseRifleUsage <- summaryBy(weaponKillsPulseRifle ~ refrencedId + standing, data = teamData, FUN=sum)
+pulseRifleUsage$mapName <- unlist(lapply(pulseRifleUsage$refrencedId, 
+                                         FUN = function(x){getMapName(destiny.manifest,x)}))
+
+print(ggplot(data=pulseRifleUsage, 
+             aes(x=mapName,
+                 y=weaponKillsPulseRifle.sum/killsPerMap$kills.sum, 
+                 fill=factor(standing,labels=c('Winners','Losers'))))+
+        geom_bar(stat='identity', position='dodge') +
+        ggtitle('Victory Rate by Pulse Rifle Usage') +
+        labs(x='Map Name', y = 'Pulse Rifle Kills / Total Kills', fill='Standing') + 
+        theme(axis.text.x = element_text(angle = 90, hjust = 1)))
+
