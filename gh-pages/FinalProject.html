@@ -130,7 +130,6 @@
             <script src='javascripts/quittingByMap.js'></script>
           </div>
 
-
           <p>
           We can also look at  a player’s Combat Rating. Combat Rating is a metric that Bungie created to effectively rank player’s along a scale.
           </p>
@@ -204,7 +203,7 @@
           </div>
 
           <h4>
-            PTFO - Sort Of
+            PTFO
           </h4>
           <p>
             Playing the objective is important.  Controling zones gives you a multiplier which is going to increase your average score per kill, and as you can see from the following graph, the average score per kill for winning teams is greater than the average score per kill for losing teams.
@@ -216,24 +215,25 @@
           </div>
 
           <p>
-            But playing the objective too much comes at a price.  Going for domination (holding all 3 zones) sounds like a good idea.
-            You get the max multiplier per kill and its a way to show the other team that you own them.
-            But according to the data, <strong>losing teams</strong> on average get more kills while dominating than winning teams.
+           Furthermore, teams often question whether or not to go for domination.
+           The benefit is the max multiplier, but the cost is that you might cause the game to switch the spawn points, and place the enemy team behind you.
+           As we've seen, starting spawn location on a map is important, and so a team that pushes for domination may end up in swaping spawns.
           </p>
-          <div id="dominationByMap" class="plot">
+          <div id="dominationKills" class="plot">
             <h2 style="text-align: center">Domination Kills by Map</h2>
             <svg></svg>
             <script src='javascripts/dominationKills.js'></script>
           </div>
           
           <p>
-            At first this plot seems to make no sense (it didn't to me) until you recognize what happens when a team achieves domination.
-            When one team dominates, they usually cause a spawn flip to occur.  
-            The dominating team is no longer containing the other team because the game has started spawning them on the other side of the map.
-            We also have established that on certain maps, the positioning matters.  The team that spawns on one side is more likely to win.
-            Domination causes these locations to switch, effectively giving the other team the advantage for the rest of the game.
+            From this plot though, we can clearly see that domination is helpful in winning.
+            Players are awarded a "Domination" medal when they kill an enemy player while their team holds all three spawn points.
+            On average, it looks like winning teams get at least 1 domination kill a match, while losing teams on average get none.
+            The fact that domination kills stay so low is an indication that domination generally doesn't last for long.
+            Teams really only seem to get a few kills out of their domination before the other team wins back a point.
 </br></br>
-            Long story short - domination isn't worth it.  Containing the other team in their spawn and mainting control of key locations is evidently more successful.
+            Long story short - it looks like going for domination is worth it.  
+            Those extra 3 kills might be the score you need to get ahead.
            
           </p>
 
@@ -251,6 +251,13 @@
           It would also be interesting to try and apply the Control model to other gametypes.  
           The place that this might have the most impact is in the Trails of Osiris gametype.  
           The stakes in that gamemode are so high, that being able to determine victory would be huge.
+
+        </br>
+          It would also be cool to look at how these trends have developed over time.
+          There have been several updates to weapon stats, and to where objectives are located on certain maps.
+          Running this analysis before and after each update may give insight into how effective these updates were.
+          For example, auto rifles were nerfed hard early in the game, while hand cannons and pulse rifles received a buff.
+          I would expcet to see that auto rifle usage decreased heavily, while hand cannon and pulse rifle usage rose to fill in the gap.
         </p>
 
         </section>

@@ -3,8 +3,8 @@ var False = false;
 var None = null;
 
 
-var data = $.getJSON('datafiles/dominationKills.json', function(test_data){
-    var plotDiv = "#dominationKills";
+var data = $.getJSON('datafiles/objectivesRatio.json', function(test_data){
+    var plotDiv = "#objectivesRatio";
     var plotSvg = plotDiv + " svg";
     var margin = {top: 20, right: 50, bottom: 10, left: 50};
 

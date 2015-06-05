@@ -19,7 +19,6 @@ Array.prototype.unique = function() {
     return arr; 
 };
 
-
 var data = $.getJSON('datafiles/weaponAndVictoryBreakdown.json', function(test_data){
     var plotDiv = "#weaponAndVictoryBreakdown";
     var plotSvg = plotDiv + " svg";
@@ -33,69 +32,62 @@ var data = $.getJSON('datafiles/weaponAndVictoryBreakdown.json', function(test_d
             maps = [];
             weaponClasses = []
 
+            /*get all of the unique weapon and map keys in the dataset*/
             for (i = 0; i < test_data.length; i++) {
                 for (j = 0; j < test_data[i]['values'].length; j++) {
                     weaponClasses.push(test_data[i]['values'][j]['y']);
                 }
             }
-
             for (i = 0; i < test_data[0]['values'].length; i++) {
                 maps.push(test_data[0]['values'][i]['x']);
             }
             maps = maps.unique();
             weaponClasses = weaponClasses.unique();
 
+            //build a list from 0 to maps.length and 0 to weaponClasses.length
             mapsIndex = [];
             weaponsIndex = [];
-
             for (var i = 0; i < maps.length; i++) {
                 mapsIndex.push(i);
             }
-
             for (var i = 0; i < weaponClasses.length; i++) {
                 weaponsIndex.push(i);
             }
 
-            console.log("Weapon Classes ", weaponClasses);
-            console.log("Maps ", maps);
-
+            //create a map that takes the map and weapon keys (strings) and outputs an integer
             var xs = d3.scale.ordinal()
                 .domain(maps)
                 .range(mapsIndex);
-
             ys = d3.scale.ordinal()
                 .domain(weaponClasses)
                 .range(weaponsIndex);
 
+            //build the chart
             var chart = nv.models.scatterChart()
                 .showDistX(true)    //showDist, when true, will display those little distribution lines on the axis.
                 .showDistY(true)
                 .width(width)
                 .height(height)
-                .x(function(d,i){return xs(d['x']);})
+                .x(function(d,i){return xs(d['x']);})   //use the interger value when defining the x and y axes
                 .y(function(d,i){return ys(d['y']);})
                 ;
 
+            //format tool tip
             chart.tooltipContent(function(key,x,y,e,graph) {
                 console.log(graph);
                 return '<h4>' + key + '</h4></br><p>'+d3.format('.3%')(graph.point.size)+'</p>';
             });
 
-
-            chart.yAxis
-               .tickFormat(d3.format(',.3f'));
-
-            // tell nvd3 to use it
+            //go back and replace the integer values with the strings
             chart.xAxis.tickFormat(function(d){
                 return(maps[d]);
             });
-
-
             chart.yAxis.tickFormat(function(d){
                 return(weaponClasses[d]);
             });
 
-            //chart.xAxis.rotateLabels(-25);
+            //rotate labels
+            chart.xAxis.rotateLabels(-25);
 
             chart.dispatch.on('renderEnd', function(){
                 console.log('Render Complete');
