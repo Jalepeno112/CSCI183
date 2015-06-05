@@ -7,13 +7,18 @@ import zipfile
 import StringIO
 import os
 NETWORKS = {"XBL":1, "PSN":2}                               #network names to values
-HEADERS = {"X-API-Key":'c657475dd04b433d91e16117a023d536'}  #headers we need to add to the request
 
+#open configuration from yaml file
+#user needs to create this file and add the following three fields
+#   Manifest: ""
+#   MANIFEST_FILE: "" 
+#   API_KEY: "YOUR_API_KEY"
+#All fields can be empty except YOUR_API_KEY.  :func:`fetchManifest will take care of the other 2
 with open("config.yaml", 'r') as f:
         CONFIG = yaml.load(f)
 
-#OPENER = urllib2.build_opener()                             #create urllib2 opener to handle sending requests and recieving responses
-#OPENER.addheaders = HEADERS.items()                         #add the headers to the opener so that every request done with this opener includes these headers
+HEADERS = {"X-API-Key":CONFIG['API_KEY']}  #headers we need to add to the request
+
 
 CLASS_HASH = {                                              #the hash for class types
                 2271682572: 'Warlock',
@@ -206,7 +211,6 @@ def fetchManifest():
     if world_manifest != CONFIG['Manifest']:
         #download new manifest
         url = "http://www.bungie.net{0}".format(world_manifest)
-        # NOTE the stream=True parameter
         r = requests.get(url)
         
         if r.status_code != 200:

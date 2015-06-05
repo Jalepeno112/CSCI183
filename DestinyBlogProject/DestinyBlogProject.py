@@ -465,6 +465,26 @@ def _addFeatureMultiProcess(game_data, func, **kwargs):
 
     return game_data
 
+def _addZonesNeutralized(game_data):
+    game_data['zonesNeutralized'] = 0
+    game_data['dominationKills'] = 0
+
+    groupByGame = game_data.groupby("gameId")
+    totalGames = len(groupByGame)
+    count = 1
+    for group in list(groupByGame.groups.keys()):
+        logger.info("Grabbing game {0}; {1} out of {2}".format(group, count, totalGames))
+        game_json = destiny.getPvPGame(group)
+        for player in game_json['Response']['data']['entries']:
+            memId = player['player']['destinyUserInfo']['membershipId']
+            if "zonesNeutralized" in player['extended']['values']:
+                game_data.ix[(game_data['gameId'] == group) & (game_data['membershipId'] == int(memId)), 'zonesNeutralized'] = player['extended']['values']['zonesNeutralized']['basic']['value']
+            if "medalsDominationKill" in player['extended']['values']:
+                game_data.ix[(game_data['gameId'] == group) & (game_data['membershipId'] == int(memId)), 'dominationKills'] = player['extended']['values']['medalsDominationKill']['basic']['value']
+        count = count + 1
+    return game_data
+
+
 def _addDominationMedals(game_data):
     game_data['dominationKills'] = 0
     groupByGame = game_data.groupby("gameId")

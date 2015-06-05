@@ -45,6 +45,7 @@ class destinyPlot(object):
 
 		self.stacked = stacked
 		self.reduceXAxis = reduceXAxis
+		
 		#write data to json file
 		with open(self.jsonFileLocation, 'w') as f:
 			json.dump(data, f)
@@ -146,6 +147,29 @@ def quittingByMap(data):
 
 	#with open(os.path.join('..','gh-pages', 'datafiles', 'quittingByMap.json'), 'w') as f:
 	#	json.dump(quittingByMap, f)
+
+def neutralizedVersusCaptured(data):
+	print("Building neutralizedVersusCaptured")
+	groupedByMapStanding = data.groupby(['refrencedId', 'standing'])
+
+	victoryToString ={0:"Winners",1:"Losers"}
+	mapDict = {h:destiny.getMapName(h) for h,_ in groupedByMapStanding.groups.keys()}
+
+	objectivesCompleted = [{'key':victoryToString[v], 
+						'values': [{
+							'x': mapDict[map],
+							'y': float((groupedByMapStanding.get_group((map, v))['objectivesCompleted']/groupedByMapStanding.get_group((map,v))['zonesNeutralized']).replace([np.inf,-np.inf],0).mean())
+						} for map, _ in groupedByMapStanding.groups.keys() if (map,v) in groupedByMapStanding.groups.keys()]
+					}for v in victoryToString.keys()]
+
+	graph = destinyPlot(objectivesCompleted, 
+						"Zones Captured/Neutralized by Winner and Loser on each Map", 
+						"objectivesRatio",
+						FULL_PLOT_HTML_DIRECTORY,
+						"Look at how a team's ability to effeciently capture points impacts victory",
+						dataFilePath = FULL_PLOT_JSON_DIRECTORY,
+						jsFilePath = FULL_PLOT_JS_DIRECTORY,
+						)
 
 def dominationByMap(data):
 	print("Building domination kills for each team by map")
@@ -394,3 +418,16 @@ if __name__ == "__main__":
 	getSniperRatiosByVictory(teamData)
 	classLevelVictory(data)
 	victoryRateByWeapon(teamData)
+	neutralizedVersusCaptured(teamData)
+	dominationByMap(teamData)
+
+	#write to index html file
+	template = jinja2_env.get_template(os.path.join('index.html'))
+	template_values = {
+		'files': [ f for f in os.listdir(FULL_PLOT_HTML_DIRECTORY) if os.path.isfile(os.path.join(FULL_PLOT_HTML_DIRECTORY,f)) ]
+	}
+	output = template.render(template_values)
+
+	with open(os.path.join(FULL_PLOT_HTML_DIRECTORY,'index.html'), 'w') as f:
+		f.write(output.encode('ascii', 'ignore'))
+		#f.write(output)

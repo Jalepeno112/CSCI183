@@ -85,7 +85,7 @@ def groupByTeam(dataFileName):
 			teamDict['orbsGatheredDroppedRatio'] = float(teamDict['orbsGathered'])/teamDict['orbsDropped']
 			
 			teamDict['players'] = len(teamData)
-			teamDict['teamScore'] = teamData['teamScore'].values[0]
+			teamDict['teamScore'] = teamData['teamScore'].max()
 			teamDict['scoreStd'] = teamData['score'].std()
 			teamDict['scoreAvg'] = teamData['score'].mean()
 			
@@ -105,6 +105,7 @@ def groupByTeam(dataFileName):
 
 			teamDict['objectivesCompleted'] = teamData['objectivesCompleted'].sum()
 			teamDict['objectivesCompletedAvg'] = teamData['objectivesCompleted'].mean()
+			teamDict['zonesNeutralized'] = teamData['zonesNeutralized'].sum()
 
 			#get the number of exotic and legendary weapons that a team used
 			teamDict['numberOfExotics'] = len(teamData.ix[teamData['mostUsedWeapon1Tier'] == 'Exotic', 'mostUsedWeapon1Tier']) + len(teamData.ix[teamData['mostUsedWeapon2Tier'] == 'Exotic', 'mostUsedWeapon2Tier'])
@@ -119,8 +120,6 @@ def groupByTeam(dataFileName):
 			teamDict['weaponKillsHeavy'] = teamData['weaponKillsMachinegun'].sum() + teamData['weaponKillsRocketLauncher'].sum()
 			teamDict['weaponKillsPrimary'] = teamData['weaponKillsPulseRifle'].sum() + teamData['weaponKillsAutoRifle'].sum() + teamData['weaponKillsScoutRifle'].sum() +teamData['weaponKillsHandCannon'].sum()
 			teamDict['weaponKillsSecondary'] = teamData['weaponKillsShotgun'].sum() + teamData['weaponKillsSniper'].sum() +teamData['weaponKillsFusionRifle'].sum() + teamData['weaponKillsSideArm'].sum()
-
-
 
 			teamDict['longestKillSpree'] = teamData['longestKillSpree'].mean()
 		
